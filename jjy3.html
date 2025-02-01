@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --main-color: #ff69b4; /* 主色调 */
+            --secondary-color: #9c27b0; /* 副色调 */
+        }
+        body {
+            margin: 0;
+            background: #1a1a1a;
+            overflow: hidden;
+            font-family: '华文行楷', cursive;
+        }
+
+        /* 动态歌词墙 */
+        .lyrics-wall {
+            position: absolute;
+            width: 100%;
+            top: 20%;
+            text-align: center;
+            color: var(--main-color);
+            font-size: 2em;
+            text-shadow: 0 0 10px var(--main-color);
+            white-space: nowrap;
+            animation: scrollLyrics 20s linear infinite;
+        }
+
+        /* 心跳感应区 */
+        .heart-zone {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 60%, var(--main-color) 100%);
+            opacity: 0.3;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        /* 粒子系统 */
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, var(--secondary-color), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        @keyframes scrollLyrics {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态歌词墙 -->
+    <div class="lyrics-wall">
+        爱成为彼此感应的桥梁 ✧ 相信你 陪着你 ✧ 
+        星光不负追梦人 ✧ 未来可期 ✧
+        以爱之名 为你护航 ✧ 四千年一遇的美 ✧
+    </div>
+
+    <!-- 心跳感应区 -->
+    <div class="heart-zone"></div>
+
+<script>
+// 互动粒子系统
+document.addEventListener('mousemove', (e) => {
+    createParticle(e.clientX, e.clientY);
+});
+
+function createParticle(x, y) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.cssText = `
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        left: ${x}px;
+        top: ${y}px;
+        animation: particleFade 1s forwards;
+    `;
+    document.body.appendChild(particle);
+
+    // 粒子动画
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = Math.random() * 3 + 2;
+    const vx = Math.cos(angle) * velocity;
+    const vy = Math.sin(angle) * velocity;
+
+    const move = () => {
+        particle.style.left = parseFloat(particle.style.left) + vx + 'px';
+        particle.style.top = parseFloat(particle.style.top) + vy + 'px';
+        particle.style.opacity -= 0.02;
+        if (particle.style.opacity > 0) {
+            requestAnimationFrame(move);
+        } else {
+            particle.remove();
+        }
+    };
+    move();
+}
+
+// 歌词墙点击特效
+const lyrics = document.querySelector('.lyrics-wall');
+lyrics.addEventListener('click', () => {
+    lyrics.style.animationPlayState = lyrics.style.animationPlayState === 'paused' ? 'running' : 'paused';
+});
+</script>
+</body>
+</html>
