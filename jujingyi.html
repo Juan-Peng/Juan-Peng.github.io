@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --main-color: #ff69b4; /* 主色调 */
+            --secondary-color: #9c27b0; /* 副色调 */
+            --glow-color: rgba(255,105,180,0.3); /* 光晕效果 */
+        }
+        body {
+            margin: 0;
+            background: radial-gradient(circle at center, #1a1a1a, #000);
+            overflow: hidden;
+            perspective: 1000px;
+            font-family: '华文行楷', cursive;
+        }
+
+        /* 3D星系容器 */
+        #galaxy {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: rotateGalaxy 60s linear infinite;
+        }
+
+        /* 动态歌词墙 */
+        .lyrics-wall {
+            position: absolute;
+            width: 300%;
+            height: 100%;
+            left: -100%;
+            white-space: nowrap;
+            color: var(--main-color);
+            text-shadow: 0 0 10px var(--main-color);
+            font-size: 2.5em;
+            transform: rotateX(60deg) rotateZ(45deg);
+            animation: scrollLyrics 30s linear infinite;
+            filter: drop-shadow(0 0 20px var(--glow-color));
+        }
+
+        /* 心跳感应区 */
+        .heart-zone {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 60%, var(--main-color) 100%);
+            opacity: 0.3;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        /* 粒子系统 */
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, var(--secondary-color), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        @keyframes rotateGalaxy {
+            from { transform: rotateY(0); }
+            to { transform: rotateY(360deg); }
+        }
+        @keyframes scrollLyrics {
+            from { transform: rotateX(60deg) rotateZ(45deg) translateX(0); }
+            to { transform: rotateX(60deg) rotateZ(45deg) translateX(-66.6%); }
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D星系 -->
+    <div id="galaxy"></div>
+
+    <!-- 动态歌词墙 -->
+    <div class="lyrics-wall">
+        爱成为彼此感应的桥梁 ✧ 相信你 陪着你 ✧ 
+        星光不负追梦人 ✧ 未来可期 ✧
+        以爱之名 为你护航 ✧ 四千年一遇的美 ✧
+    </div>
+
+    <!-- 心跳感应区 -->
+    <div class="heart-zone"></div>
+
+<script>
+// 3D星系生成器
+const galaxy = document.getElementById('galaxy');
+const starCount = 500;
+
+for(let i=0; i<starCount; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.cssText = `
+        position: absolute;
+        width: ${Math.random() * 3}px;
+        height: ${Math.random() * 3}px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(255,255,255,0.8);
+        transform: 
+            translate3d(${Math.random() * 2000 - 1000}px, 
+                       ${Math.random() * 2000 - 1000}px, 
+                       ${Math.random() * 2000 - 1000}px);
+        opacity: ${Math.random() * 0.8 + 0.2};
+    `;
+    galaxy.appendChild(star);
+}
+
+// 互动粒子系统
+const particles = [];
+document.addEventListener('mousemove', (e) => {
+    createParticle(e.clientX, e.clientY);
+});
+
+function createParticle(x, y) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.cssText = `
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        left: ${x}px;
+        top: ${y}px;
+        animation: particleFade 1s forwards;
+    `;
+    document.body.appendChild(particle);
+    particles.push(particle);
+
+    anime({
+        targets: particle,
+        translateX: anime.random(-50, 50),
+        translateY: anime.random(-50, 50),
+        scale: [1, 0],
+        opacity: [1, 0],
+        duration: 1000,
+        easing: 'easeOutExpo',
+        complete: () => particle.remove()
+    });
+}
+
+// 歌词墙点击特效
+const lyrics = document.querySelector('.lyrics-wall');
+lyrics.addEventListener('click', () => {
+    anime({
+        targets: lyrics,
+        scale: 1.2,
+        duration: 500,
+        direction: 'alternate'
+    });
+});
+</script>
+</body>
+</html>
