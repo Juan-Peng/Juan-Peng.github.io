@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            background: #2b1055;
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .jjy-photo {
+            width: 300px;
+            height: 400px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(255,105,180,0.5);
+            position: relative;
+            z-index: 2;
+            transition: transform 0.3s;
+            background: url('https://example.com/jujingyi.jpg') center/cover; /* 替换实际图片链接 */
+        }
+        .jjy-photo:hover {
+            transform: scale(1.05);
+        }
+        .title {
+            position: absolute;
+            top: 20%;
+            color: #ff69b4;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px #ff69b4;
+            animation: float 3s ease-in-out infinite;
+        }
+        .info-box {
+            position: absolute;
+            bottom: 20%;
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            color: #fff;
+            text-align: center;
+            border: 2px solid #ff69b4;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            background: radial-gradient(circle, #ff69b4, transparent);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">鞠婧祎·绝世美颜</h1>
+        <div class="jjy-photo"></div>
+        <div class="info-box">
+            <h2>四千年美女</h2>
+            <p>生日：1994.6.18<br>
+               身高：159cm<br>
+               代表作：芸汐传、新白娘子传奇<br>
+               💖 SNH48 TOP级成员 💖</p >
+        </div>
+    </div>
+
+<script>
+// 粉色爱心粒子特效
+document.addEventListener('click', (e) => {
+    createParticles(e.clientX, e.clientY);
+});
+
+function createParticles(x, y) {
+    for(let i=0; i<30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const size = Math.random() * 15 + 5;
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 5 + 2;
+        
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.opacity = 0.7;
+        
+        document.body.appendChild(particle);
+        
+        // 粒子动画
+        const vx = Math.cos(angle) * velocity;
+        const vy = Math.sin(angle) * velocity;
+        
+        requestAnimationFrame(function move() {
+            const currentX = parseFloat(particle.style.left);
+            const currentY = parseFloat(particle.style.top);
+            
+            particle.style.left = (currentX + vx) + 'px';
+            particle.style.top = (currentY + vy) + 'px';
+            particle.style.opacity -= 0.02;
+            
+            if(particle.style.opacity > 0) {
+                requestAnimationFrame(move);
+            } else {
+                particle.remove();
+            }
+        });
+    }
+}
+
+// 自动飘落花瓣
+setInterval(() => {
+    const petal = document.createElement('div');
+    petal.className = 'particle';
+    petal.style.left = Math.random() * window.innerWidth + 'px';
+    petal.style.width = petal.style.height = Math.random() * 10 + 5 + 'px';
+    petal.style.background = `radial-gradient(circle, 
+        hsl(${Math.random()*360}, 100%, 70%), 
+        transparent)`;
+    
+    document.body.appendChild(petal);
+    
+    let yPos = -50;
+    function fall() {
+        yPos += 2;
+        petal.style.top = yPos + 'px';
+        petal.style.left = parseFloat(petal.style.left) + Math.sin(yPos/30) + 'px';
+        
+        if(yPos < window.innerHeight + 100) {
+            requestAnimationFrame(fall);
+        } else {
+            petal.remove();
+        }
+    }
+    fall();
+}, 500);
+</script>
+</body>
+</html>
