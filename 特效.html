@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        .cyber-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #0ff;
+            font-size: 4em;
+            text-shadow: 0 0 10px #0ff,
+                         0 0 20px #0ff,
+                         0 0 30px #0ff;
+            animation: glitch 2s infinite;
+            font-family: 'Impact', sans-serif;
+            mix-blend-mode: screen;
+        }
+        
+        @keyframes glitch {
+            0% { clip-path: inset(0 0 95% 0); }
+            15% { clip-path: inset(25% 0 30% 0); }
+            30% { transform: translate(-52%, -50%) skew(5deg); }
+            45% { text-shadow: 5px 0 magenta; }
+            60% { clip-path: inset(10% 0 60% 0); }
+            75% { transform: translate(-48%, -50%) skew(-3deg); }
+            90% { text-shadow: -5px 0 cyan; }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        .laser {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #0ff, transparent);
+            animation: scan 4s linear infinite;
+            box-shadow: 0 0 15px #0ff;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-text" data-text="SYSTEM ONLINE">SYSTEM ONLINE</div>
+    
+<script>
+// 动态激光扫描
+setInterval(() => {
+    const laser = document.createElement('div');
+    laser.className = 'laser';
+    laser.style.left = Math.random() * 100 + '%';
+    laser.style.width = Math.random() * 50 + 30 + '%';
+    document.body.appendChild(laser);
+    setTimeout(() => laser.remove(), 4000);
+}, 500);
+
+// 数字雨特效
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const chars = '01';
+const fontSize = 14;
+const columns = canvas.width/fontSize;
+const drops = Array(Math.floor(columns)).fill(0);
+
+function drawMatrix() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#0F0';
+    ctx.font = fontSize + 'px monospace';
+
+    drops.forEach((drop, i) => {
+        const char = chars[Math.floor(Math.random()*chars.length)];
+        ctx.fillText(char, i*fontSize, drop*fontSize);
+        
+        if (drop*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+    });
+}
+
+setInterval(drawMatrix, 60);
+
+// 点击屏幕触发电磁脉冲
+document.addEventListener('click', e => {
+    const pulse = document.createElement('div');
+    pulse.style = `
+        position: fixed;
+        left: ${e.clientX - 100}px;
+        top: ${e.clientY - 100}px;
+        width: 200px;
+        height: 200px;
+        border: 4px solid #0ff;
+        border-radius: 50%;
+        animation: pulse 1s forwards;
+    `;
+    
+    document.body.appendChild(pulse);
+    setTimeout(() => pulse.remove(), 1000);
+});
+
+// 窗口自适应
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(0); opacity: 1; }
+        100% { transform: scale(3); opacity: 0; }
+    }
+</style>
+</body>
+</html>
