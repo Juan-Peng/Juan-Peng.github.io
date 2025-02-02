@@ -1,164 +1,282 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
             --main-color: #ff69b4; /* 主色调 */
-            --secondary-color: #9c27b0; /* 副色调 */
-            --glow-color: rgba(255,105,180,0.3); /* 光晕效果 */
+            --bg-color: #1a1a1a;   /* 背景色 */
         }
         body {
             margin: 0;
-            background: radial-gradient(circle at center, #1a1a1a, #000);
+            background: var(--bg-color);
             overflow: hidden;
-            perspective: 1000px;
+            touch-action: manipulation;
             font-family: '华文行楷', cursive;
         }
 
-        /* 3D星系容器 */
-        #galaxy {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            animation: rotateGalaxy 60s linear infinite;
+        /* 动态背景层 */
+        .background {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
         }
 
-        /* 动态歌词墙 */
-        .lyrics-wall {
+        /* 星空光晕特效 */
+        .star {
             position: absolute;
-            width: 300%;
-            height: 100%;
-            left: -100%;
-            white-space: nowrap;
-            color: var(--main-color);
-            text-shadow: 0 0 10px var(--main-color);
-            font-size: 2.5em;
-            transform: rotateX(60deg) rotateZ(45deg);
-            animation: scrollLyrics 30s linear infinite;
-            filter: drop-shadow(0 0 20px var(--glow-color));
-        }
-
-        /* 心跳感应区 */
-        .heart-zone {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            width: 2px;
+            height: 2px;
+            background: rgba(255,255,255,0.8);
             border-radius: 50%;
-            background: radial-gradient(circle, transparent 60%, var(--main-color) 100%);
-            opacity: 0.3;
-            animation: heartbeat 1.5s ease-in-out infinite;
-            mix-blend-mode: screen;
-            pointer-events: none;
+            animation: twinkle 3s infinite;
         }
 
-        /* 粒子系统 */
+        /* 流动光带 */
+        .light-beam {
+            position: absolute;
+            height: 100px;
+            width: 300%;
+            background: linear-gradient(
+                90deg,
+                transparent 20%,
+                rgba(255,105,180,0.1) 50%,
+                transparent 80%
+            );
+            animation: flow 20s linear infinite;
+            transform: rotate(-15deg);
+        }
+
+        /* 动态应援语系统 */
+        .slogan {
+            position: fixed;
+            width: 100%;
+            text-align: center;
+            color: var(--main-color);
+            text-shadow: 0 0 15px var(--main-color);
+            opacity: 0;
+            z-index: 2;
+        }
+        #slogan1 {
+            top: 20%;
+            font-size: 2.5em;
+            animation: floatText 8s infinite 2s;
+        }
+        #slogan2 {
+            bottom: 30%;
+            font-size: 2em;
+            animation: floatText 8s infinite;
+        }
+
+        /* 粒子系统样式 */
         .particle {
             position: absolute;
-            background: radial-gradient(circle, var(--secondary-color), transparent);
-            border-radius: 50%;
             pointer-events: none;
+            background: radial-gradient(circle, var(--main-color), transparent);
+            border-radius: 50%;
+            z-index: 1;
         }
 
-        @keyframes rotateGalaxy {
-            from { transform: rotateY(0); }
-            to { transform: rotateY(360deg); }
+        /* 点击特效文字 */
+        .click-text {
+            position: absolute;
+            color: var(--main-color);
+            font-size: 1.5em;
+            text-shadow: 0 0 10px var(--main-color);
+            opacity: 0;
+            animation: textFade 2s forwards;
+            white-space: nowrap;
+            z-index: 1;
         }
-        @keyframes scrollLyrics {
-            from { transform: rotateX(60deg) rotateZ(45deg) translateX(0); }
-            to { transform: rotateX(60deg) rotateZ(45deg) translateX(-66.6%); }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
         }
-        @keyframes heartbeat {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.2); }
+        @keyframes flow {
+            from { transform: translateX(-100%) rotate(-15deg); }
+            to { transform: translateX(100%) rotate(-15deg); }
+        }
+        @keyframes floatText {
+            0%, 100% { opacity: 0; transform: translateY(20px); }
+            30%, 70% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes textFade {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
         }
     </style>
 </head>
 <body>
-    <!-- 3D星系 -->
-    <div id="galaxy"></div>
+    <!-- 动态背景 -->
+    <div class="background" id="bg-stars"></div>
+    <div class="background" id="bg-lights"></div>
 
-    <!-- 动态歌词墙 -->
-    <div class="lyrics-wall">
-        爱成为彼此感应的桥梁 ✧ 相信你 陪着你 ✧ 
-        星光不负追梦人 ✧ 未来可期 ✧
-        以爱之名 为你护航 ✧ 四千年一遇的美 ✧
-    </div>
-
-    <!-- 心跳感应区 -->
-    <div class="heart-zone"></div>
+    <!-- 动态应援语 -->
+    <div class="slogan" id="slogan1">❤ 鞠婧祎 ❤</div>
+    <div class="slogan" id="slogan2">✨ 爱是双向感应的桥梁 ✨</div>
 
 <script>
-// 3D星系生成器
-const galaxy = document.getElementById('galaxy');
-const starCount = 500;
-
-for(let i=0; i<starCount; i++) {
+// 初始化星空背景
+const starsContainer = document.getElementById('bg-stars');
+for(let i=0; i<200; i++) {
     const star = document.createElement('div');
     star.className = 'star';
-    star.style.cssText = `
-        position: absolute;
-        width: ${Math.random() * 3}px;
-        height: ${Math.random() * 3}px;
-        background: white;
-        border-radius: 50%;
-        box-shadow: 0 0 10px rgba(255,255,255,0.8);
-        transform: 
-            translate3d(${Math.random() * 2000 - 1000}px, 
-                       ${Math.random() * 2000 - 1000}px, 
-                       ${Math.random() * 2000 - 1000}px);
-        opacity: ${Math.random() * 0.8 + 0.2};
-    `;
-    galaxy.appendChild(star);
+    star.style.left = Math.random() * 100 + 'vw';
+    star.style.top = Math.random() * 100 + 'vh';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    starsContainer.appendChild(star);
 }
 
-// 互动粒子系统
-const particles = [];
-document.addEventListener('mousemove', (e) => {
-    createParticle(e.clientX, e.clientY);
-});
-
-function createParticle(x, y) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.style.cssText = `
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        left: ${x}px;
-        top: ${y}px;
-        animation: particleFade 1s forwards;
-    `;
-    document.body.appendChild(particle);
-    particles.push(particle);
-
-    anime({
-        targets: particle,
-        translateX: anime.random(-50, 50),
-        translateY: anime.random(-50, 50),
-        scale: [1, 0],
-        opacity: [1, 0],
-        duration: 1000,
-        easing: 'easeOutExpo',
-        complete: () => particle.remove()
-    });
+// 初始化流动光带
+const lightsContainer = document.getElementById('bg-lights');
+for(let i=0; i<3; i++) {
+    const beam = document.createElement('div');
+    beam.className = 'light-beam';
+    beam.style.top = Math.random() * 100 + 'vh';
+    beam.style.animationDelay = Math.random() * 5 + 's';
+    lightsContainer.appendChild(beam);
 }
 
-// 歌词墙点击特效
-const lyrics = document.querySelector('.lyrics-wall');
-lyrics.addEventListener('click', () => {
-    anime({
-        targets: lyrics,
-        scale: 1.2,
-        duration: 500,
-        direction: 'alternate'
-    });
+// 智能粒子生成系统
+document.addEventListener('click', (e) => {
+    createParticles(e.clientX, e.clientY);
+    showClickText(e.clientX, e.clientY);
 });
+
+function createParticles(x, y) {
+    for(let i=0; i<20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const size = Math.random() * 15 + 5;
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 3 + 2;
+        
+        particle.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            opacity: 0.8;
+            animation: particleFade 1.5s forwards;
+        `;
+
+        document.body.appendChild(particle);
+
+        const vx = Math.cos(angle) * velocity;
+        const vy = Math.sin(angle) * velocity;
+        
+        const move = () => {
+            particle.style.left = parseFloat(particle.style.left) + vx + 'px';
+            particle.style.top = parseFloat(particle.style.top) + vy + 'px';
+            requestAnimationFrame(move);
+        };
+        move();
+        
+        setTimeout(() => particle.remove(), 1500);
+    }
+}
+
+// 显示点击特效文字
+function showClickText(x, y) {
+    const text = document.createElement('div');
+    text.className = 'click-text';
+    text.textContent = '相信你 陪着你';
+    text.style.left = x + 'px';
+    text.style.top = y + 'px';
+    document.body.appendChild(text);
+    setTimeout(() => text.remove(), 2000);
+}
+
+// 移动端触摸支持
+let lastTouch = 0;
+document.addEventListener('touchstart', (e) => {
+    const now = Date.now();
+    if (now - lastTouch < 300) { // 双击检测
+        createParticles(e.touches[0].clientX, e.touches[0].clientY);
+        showClickText(e.touches[0].clientX, e.touches[0].clientY);
+    }
+    lastTouch = now;
+});
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --main-color: #ff69b4;  /* 主色调 */
+            --bg-color: #1a1a1a;    /* 背景色 */
+        }
+        body {
+            margin: 0;
+            background: var(--bg-color);
+            overflow: hidden;
+            touch-action: manipulation;
+            font-family: '华文行楷', cursive;
+        }
+
+        /* 音乐控制按钮 */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,105,180,0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--main-color);
+            z-index: 999;
+            transition: transform 0.3s;
+        }
+        .music-control:hover {
+            transform: scale(1.1);
+        }
+
+        /* 其他样式保持不变... */
+    </style>
+</head>
+<body>
+    <!-- 新增音乐播放器 -->
+    <audio id="bg-music" loop>
+        <source src="https://y.qq.com/n/yqq/song/0031jZNh3SctfB.html" type="audio/mpeg">
+    </audio>
+    <div class="music-control" id="music-btn">🎵</div>
+
+    <!-- 其他HTML元素保持不变... -->
+
+<script>
+// 音乐控制功能
+const musicBtn = document.getElementById('music-btn');
+const bgMusic = document.getElementById('bg-music');
+
+// 点击按钮控制音乐
+musicBtn.addEventListener('click', () => {
+    if (bgMusic.paused) {
+        bgMusic.play();
+        musicBtn.innerHTML = '🎵';
+    } else {
+        bgMusic.pause();
+        musicBtn.innerHTML = '🔇';
+    }
+});
+
+// 微信浏览器特殊处理
+document.addEventListener('WeixinJSBridgeReady', function() {
+    bgMusic.load();
+}, false);
+
+// 其他JavaScript代码保持不变...
 </script>
 </body>
 </html>
