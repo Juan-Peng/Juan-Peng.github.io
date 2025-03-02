@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高考加油助手</title>
+    <style>
+        body {
+            font-family: '微软雅黑', sans-serif;
+            background: linear-gradient(135deg, #83a4d4, #b6fbff);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #countdown {
+            background: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .tip-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #2980b9;
+            margin: 15px 0;
+        }
+
+        .motivation {
+            font-style: italic;
+            color: #34495e;
+            text-align: center;
+            margin: 25px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #2980b9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+       <h1>2025高考倒计时</h1>
+        
+        <div id="countdown">
+            <h2>距离2025年高考还有</h2>
+            <div id="timer"></div>
+        </div>
+
+        <div class="motivation" id="quote">
+            "乾坤未定，你我皆是黑马！"
+        </div>
+
+        <div class="tip-box">
+            <h3>📌 备考小贴士</h3>
+            <p>✅ 保持规律作息时间</p >
+            <p>✅ 每日复习错题本</p >
+            <p>✅ 保持适度运动</p >
+            <p>✅ 营养均衡饮食</p >
+        </div>
+
+        <button onclick="newQuote()">获取新鼓励</button>
+    </div>
+
+    <script>
+               // 【修改重点】高考时间设置为2025年6月7日
+        const examDate = new Date('2025-06-07T00:00:00');
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = examDate - now;
+
+            if(distance < 0) {
+                document.getElementById("timer").innerHTML = "高考已顺利结束！🎉";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("timer").innerHTML = 
+                `${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`;
+        }
+
+        // 励志语录库
+        const quotes = [
+            "十年寒窗磨一剑，今朝出鞘试锋芒！",
+            "你的名字这么好听，一定要出现在录取通知书上！",
+            "答完一样的题，奔赴不一样的精彩！",
+            "关关难过关关过，前路漫漫亦灿灿！",
+            "愿你合上笔盖的那一刻，有战士收刀入鞘的骄傲！",
+            "看似不起波澜的日复一日，会突然在某一天让人看到坚持的意义！"
+        ];
+
+        function newQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById("quote").innerHTML = `"${quotes[randomIndex]}"`;
+        }
+
+        // 初始化
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        newQuote();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025高考备战助手</title>
+    <style>
+        /* 新增院校相关样式 */
+        .school-input {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .school-list {
+            margin-top: 15px;
+        }
+        .school-item {
+            background: white;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .gap {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 新增目标院校录入模块 -->
+        <div class="school-input">
+            <h3>🎯 我的目标院校</h3>
+            <input type="text" id="schoolName" placeholder="输入院校名称">
+            <input type="number" id="targetScore" placeholder="往年录取分数线">
+            <input type="number" id="myScore" placeholder="我的当前分数">
+            <button onclick="saveSchool()">保存目标</button>
+            <div class="school-list" id="schoolList"></div>
+        </div>
+
+        <script>
+            // 新增院校存储功能
+            let schools = JSON.parse(localStorage.getItem('schools')) || [];
+
+            function saveSchool() {
+                const school = {
+                    name: document.getElementById('schoolName').value,
+                    target: parseInt(document.getElementById('targetScore').value),
+                    current: parseInt(document.getElementById('myScore').value),
+                    id: Date.now()
+                };
+
+                schools.push(school);
+                localStorage.setItem('schools', JSON.stringify(schools));
+                displaySchools();
+                clearInputs();
+            }
+
+            function displaySchools() {
+                const list = document.getElementById('schoolList');
+                list.innerHTML = schools.map(school => `
+                    <div class="school-item">
+                        <strong>${school.name}</strong><br>
+                        录取线：${school.target}分 | 
+                        我的分数：${school.current}分
+                        <span class="gap">差距：${school.target - school.current}分</span>
+                    </div>
+                `).join('');
+            }
+
+            function clearInputs() {
+                document.getElementById('schoolName').value = '';
+                document.getElementById('targetScore').value = '';
+                document.getElementById('myScore').value = '';
+            }
+
+            // 页面加载时显示已有院校
+            window.onload = displaySchools;
+        </script>
+    </div>
+</body>
+</html>
